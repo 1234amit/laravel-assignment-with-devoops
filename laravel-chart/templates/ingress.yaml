@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: laravel-app-ingress
 spec:
+  ingressClassName: nginx
   rules:
     - host: laravel-test.local
       http:

@@ -1,5 +1,3 @@
-<?php
-
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -7,5 +5,5 @@ Route::get('/', function () {
 });
 
 Route::get('/health', function () {
-    return response()->json(["status" => "ok"], 200);
+    return response()->json(['status' => 'ok'], 200);
 });

@@ -4,7 +4,7 @@ namespace: laravel
 
 image:
   repository: 12amit1234/laravel-k8s-app
-  tag: "1.0"
+  tag: "1.1"
 
 config:
   APP_ENV: production
