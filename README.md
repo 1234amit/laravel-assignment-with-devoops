@@ -1,64 +1,217 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Laravel Kubernetes Deployment (Docker + kubeadm + Helm)## Project OverviewThis project deploys a Laravel application into a Kubernetes cluster using **Docker**, **kubeadm**, and **Helm**.The application includes:- `/` route returns: **Laravel Kubernetes Deployment Test**- `/health` endpoint returns HTTP **200 OK**Ingress is configured with hostname:- `laravel-test.local`---## Prerequisites- Ubuntu Linux- Docker installed- Kubernetes cluster created using kubeadm- kubectl installed and configured- Helm installed- Ingress NGINX controller installed- DockerHub account---## Laravel Application Routes### Home Route
+GET /
+Laravel Kubernetes Deployment Test
+### Health Check Route
+GET /health
+Returns HTTP 200 OK
+Example implementation in `routes/web.php`:```phpuse Illuminate\Support\Facades\Route;Route::get('/', function () {    return "Laravel Kubernetes Deployment Test";});Route::get('/health', function () {    return response()->json(['status' => 'ok'], 200);});
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Docker Setup
+Dockerfile
+A production-ready multi-service container was created using:
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+PHP 8.2 FPM
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Nginx
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Supervisor
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+Build Docker Image
+docker build -t 12amit1234/laravel-k8s-app:1.1 .
+Push Docker Image
+docker push 12amit1234/laravel-k8s-app:1.1
+DockerHub Image URL
+https://hub.docker.com/r/12amit1234/laravel-k8s-app
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Kubernetes Cluster Setup (kubeadm)
+This cluster was created using kubeadm.
+Verify Nodes
+kubectl get nodes -o wide
+Verify Cluster Info
+kubectl cluster-info
+Verify All Pods
+kubectl get pods -A
+Verify Ingress Resources
+kubectl get ingress -A
 
-### Premium Partners
+CNI Plugin
+CNI plugin installed: Calico
+Verification:
+kubectl get pods -n kube-system
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Ingress Controller Setup
+Ingress controller used: ingress-nginx
+Verify ingress-nginx:
+kubectl get pods -n ingress-nginxkubectl get svc -n ingress-nginx
 
-## Contributing
+Helm Chart Deployment
+Helm Chart Includes:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+Deployment
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+Service
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+Ingress
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+ConfigMap
+
+
+Secret
+
+
+PVC
+
+
+Resource requests/limits
+
+
+Liveness probe
+
+
+Readiness probe
+
+
+SecurityContext
+
+
+
+Helm Commands
+Install Application
+kubectl create namespace laravelhelm install laravel-app ./laravel-chart -n laravel
+Upgrade Application
+helm upgrade laravel-app ./laravel-chart -n laravel
+Uninstall Application
+helm uninstall laravel-app -n laravel
+
+Configuration (ConfigMap + Secret)
+ConfigMap
+APP_ENV is loaded from ConfigMap.
+Secret
+APP_KEY is loaded from Secret.
+Verify:
+kubectl get configmap -n laravelkubectl get secret -n laravel
+
+Persistent Volume Claim (PVC)
+Storage is mounted using PVC.
+Check PVC status:
+kubectl get pvc -n laravel
+
+Laravel Runtime Commands
+These commands are required for Laravel production runtime:
+php artisan config:cachephp artisan route:cachephp artisan migratephp artisan storage:link
+In this assignment, these are not automatically executed inside the container because:
+
+
+Migration depends on database availability
+
+
+Production caching should be controlled manually or by CI/CD pipeline
+
+
+
+Ingress Testing
+Ingress host configured:
+laravel-test.local
+Add Host Entry
+Edit /etc/hosts:
+sudo nano /etc/hosts
+Add:
+192.168.28.131 laravel-test.local
+Test Using Curl
+curl -I http://laravel-test.local/curl -I http://laravel-test.local/health
+Expected:
+
+
+/ returns 200
+
+
+/health returns 200
+
+
+
+Verify Deployment Status
+kubectl get all -n laravelkubectl get pods -n laravel -o widekubectl get ingress -n laravel
+
+Troubleshooting
+1. Helm install fails due to namespace issues
+Fix:
+kubectl delete namespace laravel --grace-period=0 --forcekubectl create namespace laravel
+2. Ingress returning nginx 404
+Cause: ingressClassName missing
+Fix: Add this to ingress.yaml:
+spec:  ingressClassName: nginx
+3. DNS error: Could not resolve host
+Fix /etc/hosts entry:
+192.168.28.131 laravel-test.local
+4. PVC stuck in Pending
+Cause: No default StorageClass
+Fix: install local-path provisioner:
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yamlkubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+Assumptions
+
+
+Kubernetes cluster created using kubeadm
+
+
+Node has internet access to pull Docker image
+
+
+ingress-nginx is installed and working
+
+
+
+Production Improvement Suggestions
+
+
+Use separate MySQL/PostgreSQL database (StatefulSet)
+
+
+Use Redis for cache/session
+
+
+Enable TLS using cert-manager + Let’s Encrypt
+
+
+Add HPA for autoscaling
+
+
+Add PodDisruptionBudget
+
+
+Add NetworkPolicy
+
+
+Add separate queue worker deployment
+
+
+Add scheduler CronJob
+
+
+Add CI/CD pipeline with GitHub Actions
+
+
+Use private registry secrets if required
+
+
+Run container as non-root
+
+
+
+Submission
+GitHub Repository:
+https://github.com/1234amit/laravel-assignment-with-devoops
+---# ✅ Next StepNow do:```bashnano README.md
+Paste this full content → Save.
+Then push:
+git add README.mdgit commit -m "add full README documentation"git push origin main
+
+If you want, I can also generate Bonus YAMLs (HPA + PDB + NetworkPolicy) to increase your score.
