@@ -2,8 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.pvc.name }}
-  namespace: {{ .Values.namespace }}
+  name: laravel-pvc
 spec:
   accessModes:
 {{ toYaml .Values.pvc.accessModes | indent 4 }}
